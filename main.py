@@ -19,11 +19,25 @@ def dict_factory (cursor, row):
 
 @app.get ('/tracks')
 async def get_tracks (page:int = 0, per_page:int = 10):
-    if page > 0:
-        page = page - 1
     app.db_connection.row_factory = dict_factory
     cursor = app.db_connection.cursor ()
     data = cursor.execute ('''
     SELECT * FROM tracks LIMIT ? OFFSET ?''', [per_page, page]).fetchall ()
     return data
 
+@app.get ('tracks/album_id')
+async def get_names_of_album (album_id:int = 0):
+    cursor = app.db_connection.cursor ()
+    data = cursor.execute ('''
+        SELECT Name FROM tracks WHERE Album_id = ?           
+            ''', (album_id)).fetchall ()
+    return data
+
+@app.get ('/tracks/composers')
+async def get_titles_of_composer (composer_name):
+   cursor = app.db_connection.cursor ()
+   data = cursor.execute ('''
+        SELECT tracks.Name FROM tracks WHERE Name = 
+   ''', [composer_name]).fetchall ()
+
+   return data
