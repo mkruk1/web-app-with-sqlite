@@ -1,4 +1,5 @@
 from fastapi import FastAPI, HTTPException
+from fastapi.responses import JSONResponse
 import sqlite3
 
 app = FastAPI ()
@@ -49,6 +50,6 @@ async def get_titles_of_composer (composer_name):
                 "error": "there is no such artist"
             }
         }
-        return Response (content = cont, status_code = 404) 
+        return JSONResponse (content = cont, status_code = 404) 
 
     return data
