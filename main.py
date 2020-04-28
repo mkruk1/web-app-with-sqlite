@@ -25,7 +25,3 @@ async def get_tracks (page:int = 0, per_page:int = 10):
     SELECT * FROM tracks LIMIT ? OFFSET ?''', [per_page, page]).fetchall ()
     return data
 
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run (app, host = '127.0.0.1', port = 8000)
-
