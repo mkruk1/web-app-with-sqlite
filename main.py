@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 import sqlite3
 
 app = FastAPI ()
@@ -41,5 +41,9 @@ async def get_names_of_album (album_id:int):
 async def get_titles_of_composer (composer_name):
     app.db_connection.row_factory = dict_factory_list
     cursor = app.db_connection.cursor ()
-    data = cursor.execute ('''SELECT Name FROM tracks WHERE Composer = ? ''', [composer_name]).fetchall ()
+    data = cursor.execute ('''SELECT Name FROM tracks WHERE Composer = ? ORDER BY Name''', [composer_name]).fetchall ()
+
+    if len (data) == 0:
+        raise HTTPException (status_code = 404)
+
     return data
