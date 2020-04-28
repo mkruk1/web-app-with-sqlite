@@ -19,9 +19,11 @@ def dict_factory (cursor, row):
 
 @app.get ('/tracks')
 async def get_tracks (page:int = 0, per_page:int = 10):
+    if page > 0:
+        page = page - 1
     app.db_connection.row_factory = dict_factory
     cursor = app.db_connection.cursor ()
     data = cursor.execute ('''
-    SELECT * FROM tracks LIMIT ? OFFSET ?''', [per_page, page]).fetchall ()
+    SELECT * FROM tracks LIMIT ? OFFSET ?''', [per_page, page - 1]).fetchall ()
     return data
 
