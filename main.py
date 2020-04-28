@@ -24,6 +24,6 @@ async def get_tracks (page:int = 0, per_page:int = 10):
     app.db_connection.row_factory = dict_factory
     cursor = app.db_connection.cursor ()
     data = cursor.execute ('''
-    SELECT * FROM tracks LIMIT ? OFFSET ?''', [per_page, page - 1]).fetchall ()
+    SELECT * FROM tracks LIMIT ? OFFSET ?''', [per_page, page]).fetchall ()
     return data
 
