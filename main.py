@@ -44,6 +44,11 @@ async def get_titles_of_composer (composer_name):
     data = cursor.execute ('''SELECT Name FROM tracks WHERE Composer = ? ORDER BY Name''', [composer_name]).fetchall ()
 
     if len (data) == 0:
-        raise HTTPException (status_code = 404)
+        cont = {
+            "detail": {
+                "error": "there is no such artist"
+            }
+        }
+        return Response (content = cont, status_code = 404) 
 
     return data
