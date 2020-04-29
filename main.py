@@ -176,10 +176,9 @@ def dict_factory_stats (cursor, row):
 
 @app.get ('/sales')
 async def statistics (category:str):
-    app.db_connection.row_factory = dict_factory_stats 
-    cursor = app.db_connection.cursor ()
-    
     if (category == 'genres'):
+        app.db_connection.row_factory = dict_factory_stats 
+        cursor = app.db_connection.cursor ()
         data = cursor.execute ('''
             select 
                 genres.Name,
@@ -195,12 +194,14 @@ async def statistics (category:str):
                 sum DESC, genres.Name
             ''').fetchall ()
     elif (category == 'customers'):
+        app.db_connection.row_factory = dict_factory 
+        cursor = app.db_connection.cursor ()
         data = cursor.execute ('''
             select 
-                customers.CustomerId as customerId,
-                customers.Email as email,
-                customers.Phone as phone,
-                invoices.Total as sum
+                customers.CustomerId as CustomerId,
+                customers.Email as Email,
+                customers.Phone as Phone,
+                round (invoices.Total, 2) as Sum
             from 
                 customers,
                 invoices
@@ -209,7 +210,7 @@ async def statistics (category:str):
             group by
                 customers.CustomerId
             order by
-                sum desc, customers.CustomerId	
+                Sum desc, customers.CustomerId	
                 ''').fetchall ()
     else:
         cont = {
