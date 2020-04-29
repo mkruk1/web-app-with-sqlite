@@ -198,7 +198,7 @@ async def statistics (category:str):
             group by 
                 genres.GenreId
             order by 
-                sum, genres.Name
+                sum DESC, genres.Name
             ''').fetchall ()
     return data; 
     
