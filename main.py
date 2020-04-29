@@ -153,8 +153,6 @@ async def edit_customer (customer_id:int, edited_customer:Customer):
             SELECT 1 FROM customers WHERE CustomerId = ?''', 
             [customer_id]).fetchone () 
 
-    print (if_exists)
-
     if if_exists == None:
         cont = {
             "detail": {
@@ -168,5 +166,36 @@ async def edit_customer (customer_id:int, edited_customer:Customer):
     data = cursor.execute ('''
             SELECT * FROM customers WHERE CustomerId = ? ''', 
             [customer_id]).fetchone ()
-    print (data)
     return data
+
+def dict_genre_stats (cursor, row):
+    return {row [0]: row [1]}
+
+@app.get ('/sales')
+async def statistics (category:str):
+    if (category != 'genres'):
+        cont = {
+            "detail": {
+                "error": "there is no such customer"
+            }
+        }
+        return JSONResponse (content = cont, status_code = 404) 
+
+    app.db_connection.row_factory = dict_genre_stats 
+    cursor = app.db_connection.cursor ()
+    data = cursor.execute ('''
+            select 
+                genres.Name,
+                sum (invoice_items.Quantity) as suma
+            from 
+                tracks, genres, invoice_items
+            where
+                tracks.GenreId = genres.GenreId and
+                invoice_items.TrackId = tracks.TrackId
+            group by 
+                genres.GenreId
+            order by 
+                suma
+            ''').fetchall ()
+    return data; 
+    
