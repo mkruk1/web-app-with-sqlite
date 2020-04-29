@@ -104,3 +104,69 @@ async def get_album (album_id:int):
 
     return data [0]
 
+class Customer (BaseModel):
+    company: str = None
+    address: str = None
+    city: str = None
+    state: str = None
+    country: str = None
+    postalcode: str = None
+    fax: str = None
+
+def update (customer_id:int, edited_customer:Customer):
+    cursor = app.db_connection.cursor ()
+    if (edited_customer.company) != None:
+        cursor.execute (''' UPDATE customers SET Company = ? ''',
+                [edited_customer.company])
+
+    if (edited_customer.address) != None:
+        cursor.execute (''' UPDATE customers SET Address = ? ''', 
+                [edited_customer.address])
+
+    if (edited_customer.city) != None:
+        cursor.execute (''' UPDATE customers SET City = ? ''', 
+                [edited_customer.city])
+
+    if (edited_customer.state) != None:
+        cursor.execute (''' UPDATE customers SET State = ? ''', 
+                [edited_customer.state])
+
+    if (edited_customer.country) != None:
+        cursor.execute (''' UPDATE customers SET Country = ? ''', 
+                [edited_customer.country])
+
+    if (edited_customer.postalcode) != None:
+        cursor.execute (''' UPDATE customers SET PostalCode = ? ''', 
+                [edited_customer.postalcode])
+
+    if (edited_customer.fax) != None:
+        cursor.execute (''' UPDATE customers SET Fax = ? ''', 
+                [edited_customer.fax])
+
+
+@app.put ('/customers/{customer_id}')
+async def edit_customer (customer_id:int, edited_customer:Customer):
+    app.db_connection.row_factory = sqlite3.Row
+    cursor = app.db_connection.cursor ()
+    
+    if_exists = cursor.execute ('''
+            SELECT 1 FROM customers WHERE CustomerId = ?''', 
+            [customer_id]).fetchone () 
+
+    print (if_exists)
+
+    if if_exists == None:
+        cont = {
+            "detail": {
+                "error": "there is no such customer"
+            }
+        }
+        return JSONResponse (content = cont, status_code = 404) 
+    
+    update (customer_id, edited_customer)
+
+    data = cursor.execute ('''
+            SELECT * FROM customers WHERE CustomerId = ? ''', 
+            [customer_id]).fetchone ()
+    print (data)
+    return data
