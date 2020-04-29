@@ -176,17 +176,11 @@ def dict_factory_stats (cursor, row):
 
 @app.get ('/sales')
 async def statistics (category:str):
-    if (category != 'genres'):
-        cont = {
-            "detail": {
-                "error": "there is no such customer"
-            }
-        }
-        return JSONResponse (content = cont, status_code = 404) 
-
     app.db_connection.row_factory = dict_factory_stats 
     cursor = app.db_connection.cursor ()
-    data = cursor.execute ('''
+    
+    if (category == 'genres'):
+        data = cursor.execute ('''
             select 
                 genres.Name,
                 sum (invoice_items.Quantity) as sum
@@ -200,5 +194,29 @@ async def statistics (category:str):
             order by 
                 sum DESC, genres.Name
             ''').fetchall ()
+    elif (category == 'customers'):
+        data = cursor.execute ('''
+            select 
+                customers.CustomerId as customerId,
+                customers.Email as email,
+                customers.Phone as phone,
+                invoices.Total as sum
+            from 
+                customers,
+                invoices
+            where 
+                invoices.CustomerId = customers.CustomerId
+            group by
+                customers.CustomerId
+            order by
+                sum desc, customers.CustomerId	
+                ''').fetchall ()
+    else:
+        cont = {
+            "detail": {
+                "error": "there is no such customer"
+            }
+        }
+        return JSONResponse (content = cont, status_code = 404) 
     return data; 
     
