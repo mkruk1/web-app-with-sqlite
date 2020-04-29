@@ -168,8 +168,11 @@ async def edit_customer (customer_id:int, edited_customer:Customer):
             [customer_id]).fetchone ()
     return data
 
-def dict_genre_stats (cursor, row):
-    return {row [0]: row [1]}
+def dict_factory_stats (cursor, row):
+    dct = {}
+    for idx, col in enumerate (cursor.description):
+        dct [col [0].title ()] = row [idx]
+    return dct;
 
 @app.get ('/sales')
 async def statistics (category:str):
@@ -181,12 +184,12 @@ async def statistics (category:str):
         }
         return JSONResponse (content = cont, status_code = 404) 
 
-    app.db_connection.row_factory = dict_genre_stats 
+    app.db_connection.row_factory = dict_factory_stats 
     cursor = app.db_connection.cursor ()
     data = cursor.execute ('''
             select 
                 genres.Name,
-                sum (invoice_items.Quantity) as suma
+                sum (invoice_items.Quantity) as sum
             from 
                 tracks, genres, invoice_items
             where
@@ -195,7 +198,7 @@ async def statistics (category:str):
             group by 
                 genres.GenreId
             order by 
-                suma, genres.Name
+                sum, genres.Name
             ''').fetchall ()
     return data; 
     
