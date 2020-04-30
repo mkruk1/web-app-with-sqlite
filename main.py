@@ -198,10 +198,10 @@ async def statistics (category:str):
         cursor = app.db_connection.cursor ()
         data = cursor.execute ('''
             select 
+                round (invoices.Total, 2) as Sum
                 customers.CustomerId as CustomerId,
                 customers.Email as Email,
                 customers.Phone as Phone,
-                round (invoices.Total, 2) as Sum
             from 
                 customers,
                 invoices
