@@ -211,7 +211,7 @@ async def statistics (category:str):
             group by
                 customers.CustomerId
             order by
-                Sum desc, customers.CustomerId	
+                Sum desc, customers.CustomerId desc
                 ''').fetchall ()
     else:
         cont = {
