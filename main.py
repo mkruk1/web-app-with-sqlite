@@ -27,15 +27,12 @@ def dict_factory_list (cursor, row):
 
 @app.get ('/tracks')
 async def get_tracks (page:int = 0, per_page:int = 10):
-    if page > 0:
-        page -= 1
-
     app.db_connection.row_factory = dict_factory
     cursor = app.db_connection.cursor ()
     print (page)
     data = cursor.execute ('''
             SELECT * FROM tracks LIMIT ? OFFSET ?''',
-            [per_page, page]).fetchall ()
+            [per_page, page * per_page]).fetchall ()
     return data
 
 @app.get ('/album')
