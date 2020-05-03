@@ -202,7 +202,7 @@ async def statistics (category:str):
                 customers.CustomerId as CustomerId,
                 customers.Email as Email,
                 customers.Phone as Phone,
-                round (invoices.Total, 2) as Sum
+                round (sum (invoices.Total), 2) as Sum
             from 
                 customers,
                 invoices
